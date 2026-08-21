@@ -7,7 +7,7 @@ import csv
 def ingest():
     print("Iniciando ingestão dos dados...")
     
-    with open("vendas.csv", "r", encoding="utf-8") as arquivo:
+    with open("data/vendas.csv", "r", encoding="utf-8") as arquivo:
         dados = list(csv.DictReader(arquivo))
     
     print(f"{len(dados)} registros carregados.")
