@@ -46,6 +46,9 @@ def validate():
     if dados["id_venda"].isnull().any():
         raise ValueError("Existem vendas sem ID.")
 
+    if dados["id_venda"].duplicated().any():
+    raise ValueError("Existem IDs de venda duplicados.")
+
     if (dados["quantidade"] <= 0).any():
         raise ValueError("Existem quantidades inválidas.")
 
