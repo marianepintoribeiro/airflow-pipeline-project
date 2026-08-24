@@ -1,54 +1,112 @@
-# Airflow Pipeline Project
+# Airflow Sales Data Pipeline
 
-Projeto de estudo em Engenharia de Dados utilizando Apache Airflow para criação de uma pipeline simples de processamento de dados de vendas.
+Pipeline de dados desenvolvida em **Python, Pandas e Apache Airflow** para ingestão, transformação e validação de dados de vendas.
+
+Este projeto foi desenvolvido como parte de um portfólio de estudos em **Engenharia de Dados**, com foco em conceitos fundamentais de pipelines, orquestração de tarefas e qualidade de dados.
 
 ## Objetivo
 
-O objetivo deste projeto é demonstrar a construção de uma pipeline de dados utilizando Apache Airflow.
+O objetivo do projeto é construir uma pipeline simples capaz de:
 
-A pipeline possui três etapas principais:
+* Ler dados de vendas a partir de um arquivo CSV;
+* Transformar os dados utilizando Pandas;
+* Calcular o valor total de cada venda;
+* Validar a qualidade dos dados processados;
+* Orquestrar as etapas utilizando Apache Airflow.
 
-1. **Ingest** — leitura dos dados de vendas a partir de um arquivo CSV.
-2. **Transform** — transformação dos dados e cálculo do valor total de cada venda.
-3. **Validate** — validação da qualidade e consistência dos dados processados.
+## Arquitetura
 
-## Pipeline
-
-O fluxo de execução da DAG é:
+O fluxo da pipeline é:
 
 ```text
-vendas.csv
-    │
-    ▼
-  Ingest
-    │
-    ▼
- Transform
-    │
-    ▼
- Validate
-    │
-    ▼
-vendas_transformadas.csv
+                    vendas.csv
+                        │
+                        ▼
+                   ┌─────────┐
+                   │ INGEST  │
+                   └────┬────┘
+                        │
+                        ▼
+                  ┌───────────┐
+                  │ TRANSFORM │
+                  └─────┬─────┘
+                        │
+                        ▼
+             vendas_transformadas.csv
+                        │
+                        ▼
+                  ┌──────────┐
+                  │ VALIDATE │
+                  └──────────┘
 ```
 
-A transformação calcula o valor total de cada venda utilizando:
+### Fluxo de processamento
+
+**1. Ingest**
+
+A task `ingest` realiza a leitura do arquivo `vendas.csv` utilizando Pandas.
+
+**2. Transform**
+
+A task `transform` calcula o valor total de cada venda:
 
 ```text
 valor_total = quantidade × preco_unitario
 ```
 
-## Validações
+O resultado é salvo em um novo arquivo chamado `vendas_transformadas.csv`.
 
-A etapa de validação verifica:
+**3. Validate**
 
-* Se existem registros no arquivo.
-* Se cada venda possui um ID.
-* Se a quantidade é maior que zero.
-* Se o preço unitário é maior que zero.
-* Se o valor total foi calculado corretamente.
+A task `validate` verifica a qualidade dos dados processados, garantindo que:
 
-Caso alguma validação falhe, a task gera um erro e a execução da pipeline é interrompida.
+* O arquivo possui registros;
+* Todas as vendas possuem um ID;
+* A quantidade é maior que zero;
+* O preço unitário é maior que zero;
+* O valor total foi calculado corretamente.
+
+## DAG
+
+A DAG principal do projeto é:
+
+```text
+pipeline_vendas
+```
+
+As tasks são executadas na seguinte ordem:
+
+```text
+ingest → transform → validate
+```
+
+Essa dependência garante que a transformação só seja executada após a ingestão e que a validação ocorra após a transformação.
+
+## Dados
+
+O arquivo de entrada `vendas.csv` contém dados fictícios de vendas com as seguintes colunas:
+
+| Coluna           | Descrição                       |
+| ---------------- | ------------------------------- |
+| `id_venda`       | Identificador da venda          |
+| `data`           | Data da venda                   |
+| `produto`        | Produto vendido                 |
+| `quantidade`     | Quantidade de produtos vendidos |
+| `preco_unitario` | Preço unitário do produto       |
+
+A transformação adiciona a coluna:
+
+| Coluna        | Descrição            |
+| ------------- | -------------------- |
+| `valor_total` | Valor total da venda |
+
+## Tecnologias utilizadas
+
+* **Python** — linguagem utilizada no desenvolvimento da pipeline;
+* **Pandas** — leitura e transformação dos dados;
+* **Apache Airflow** — orquestração das tarefas;
+* **CSV** — formato dos dados de entrada e saída;
+* **GitHub** — versionamento e documentação do projeto.
 
 ## Estrutura do projeto
 
@@ -56,7 +114,6 @@ Caso alguma validação falhe, a task gera um erro e a execução da pipeline é
 airflow-pipeline-project/
 │
 ├── dags/
-│   ├── pipeline_dados.py
 │   └── vendas_dag.py
 │
 ├── data/
@@ -67,40 +124,39 @@ airflow-pipeline-project/
 └── requirements.txt
 ```
 
-## Tecnologias utilizadas
+## Resultado esperado
 
-* Python
-* Apache Airflow
-* CSV
-* GitHub
-
-## DAG
-
-A DAG principal do projeto é:
+A pipeline deve gerar um arquivo:
 
 ```text
-pipeline_vendas
+data/vendas_transformadas.csv
 ```
 
-Ela contém três tasks:
+Esse arquivo deverá conter os dados originais acrescidos da coluna `valor_total`.
+
+Para os dados utilizados neste projeto, o valor total esperado das vendas é:
 
 ```text
-ingest → transform → validate
+R$ 26.390,00
 ```
-
-## Dados
-
-O arquivo `vendas.csv` contém informações de vendas, incluindo:
-
-* ID da venda
-* Data
-* Produto
-* Quantidade
-* Preço unitário
-
-A pipeline utiliza esses dados para gerar informações derivadas e realizar validações de qualidade.
 
 ## Status do projeto
 
-Projeto desenvolvido para fins de estudo e portfólio em Engenharia de Dados.
+🟡 **Em desenvolvimento**
+
+O projeto está sendo desenvolvido como parte de um portfólio de Engenharia de Dados.
+
+As próximas etapas incluem execução da DAG em um ambiente com Apache Airflow, testes do pipeline e validação dos arquivos gerados.
+
+## Aprendizados
+
+Este projeto permite praticar conceitos fundamentais de Engenharia de Dados, incluindo:
+
+* Construção de pipelines;
+* Orquestração com Apache Airflow;
+* Manipulação de dados com Pandas;
+* Transformação de dados;
+* Validação de qualidade de dados;
+* Organização de projetos;
+* Versionamento com GitHub.
 
