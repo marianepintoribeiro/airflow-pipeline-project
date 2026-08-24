@@ -82,6 +82,21 @@ ingest → transform → validate
 
 Essa dependência garante que a transformação só seja executada após a ingestão e que a validação ocorra após a transformação.
 
+## Testes de qualidade
+
+A etapa `validate` foi projetada para identificar inconsistências nos dados.
+
+| Cenário | Resultado esperado |
+|---|---|
+| Arquivo vazio | Falha na validação |
+| ID ausente | Falha na validação |
+| ID duplicado | Falha na validação |
+| Quantidade menor ou igual a zero | Falha na validação |
+| Preço unitário menor ou igual a zero | Falha na validação |
+| Valor total incorreto | Falha na validação |
+| Dados válidos | Validação concluída com sucesso |
+
+
 ## Dados
 
 O arquivo de entrada `vendas.csv` contém dados fictícios de vendas com as seguintes colunas:
