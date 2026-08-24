@@ -1,11 +1,11 @@
 from airflow import DAG
-from airflow.operators.python import PythonOperator
+from airflow.providers.standard.operators.python import PythonOperator
 from datetime import datetime
 import os
 import pandas as pd
 
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = "/workspaces/airflow-pipeline-project"
 
 INPUT_FILE = os.path.join(BASE_DIR, "data", "vendas.csv")
 TRANSFORMED_FILE = os.path.join(BASE_DIR, "data", "vendas_transformadas.csv")
@@ -47,7 +47,7 @@ def validate():
         raise ValueError("Existem vendas sem ID.")
 
     if dados["id_venda"].duplicated().any():
-    raise ValueError("Existem IDs de venda duplicados.")
+        raise ValueError("Existem IDs de venda duplicados.")
 
     if (dados["quantidade"] <= 0).any():
         raise ValueError("Existem quantidades inválidas.")
@@ -56,11 +56,11 @@ def validate():
         raise ValueError("Existem preços unitários inválidos.")
 
     valores_calculados = (
-    dados["quantidade"] * dados["preco_unitario"]
-)
+        dados["quantidade"] * dados["preco_unitario"]
+    )
 
-if not (dados["valor_total"] == valores_calculados).all():
-    raise ValueError("Existem valores totais incorretos.")
+    if not (dados["valor_total"] == valores_calculados).all():
+        raise ValueError("Existem valores totais incorretos.")
 
     print(f"{len(dados)} registros validados com sucesso.")
 
