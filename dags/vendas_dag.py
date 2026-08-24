@@ -1,8 +1,8 @@
 from airflow import DAG
 from airflow.operators.python import PythonOperator
 from datetime import datetime
-import csv
 import os
+import pandas as pd
 
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -14,67 +14,50 @@ TRANSFORMED_FILE = os.path.join(BASE_DIR, "data", "vendas_transformadas.csv")
 def ingest():
     print("Iniciando ingestão dos dados...")
 
-    with open(INPUT_FILE, "r", encoding="utf-8") as arquivo:
-        dados = list(csv.DictReader(arquivo))
+    dados = pd.read_csv(INPUT_FILE)
 
     print(f"{len(dados)} registros carregados.")
+    print(dados.head())
 
 
 def transform():
     print("Iniciando transformação dos dados...")
 
-    with open(INPUT_FILE, "r", encoding="utf-8") as arquivo:
-        dados = list(csv.DictReader(arquivo))
+    dados = pd.read_csv(INPUT_FILE)
 
-    for venda in dados:
-        quantidade = int(venda["quantidade"])
-        preco_unitario = float(venda["preco_unitario"])
+    dados["valor_total"] = (
+        dados["quantidade"] * dados["preco_unitario"]
+    )
 
-        venda["valor_total"] = quantidade * preco_unitario
-
-    with open(TRANSFORMED_FILE, "w", newline="", encoding="utf-8") as arquivo:
-        campos = [
-            "id_venda",
-            "data",
-            "produto",
-            "quantidade",
-            "preco_unitario",
-            "valor_total"
-        ]
-
-        escritor = csv.DictWriter(arquivo, fieldnames=campos)
-        escritor.writeheader()
-        escritor.writerows(dados)
+    dados.to_csv(TRANSFORMED_FILE, index=False)
 
     print("Transformação concluída.")
+    print(f"Arquivo gerado: {TRANSFORMED_FILE}")
 
 
 def validate():
     print("Iniciando validação dos dados...")
 
-    with open(TRANSFORMED_FILE, "r", encoding="utf-8") as arquivo:
-        dados = list(csv.DictReader(arquivo))
+    dados = pd.read_csv(TRANSFORMED_FILE)
 
-    if len(dados) == 0:
+    if dados.empty:
         raise ValueError("O arquivo não possui registros.")
 
-    for venda in dados:
-        if not venda["id_venda"]:
-            raise ValueError("Venda sem ID.")
+    if dados["id_venda"].isnull().any():
+        raise ValueError("Existem vendas sem ID.")
 
-        if int(venda["quantidade"]) <= 0:
-            raise ValueError("Quantidade inválida.")
+    if (dados["quantidade"] <= 0).any():
+        raise ValueError("Existem quantidades inválidas.")
 
-        if float(venda["preco_unitario"]) <= 0:
-            raise ValueError("Preço unitário inválido.")
+    if (dados["preco_unitario"] <= 0).any():
+        raise ValueError("Existem preços unitários inválidos.")
 
-        valor_calculado = (
-            int(venda["quantidade"]) *
-            float(venda["preco_unitario"])
-        )
+    valores_calculados = (
+    dados["quantidade"] * dados["preco_unitario"]
+)
 
-        if float(venda["valor_total"]) != valor_calculado:
-            raise ValueError("Valor total inválido.")
+if not (dados["valor_total"] == valores_calculados).all():
+    raise ValueError("Existem valores totais incorretos.")
 
     print(f"{len(dados)} registros validados com sucesso.")
 
