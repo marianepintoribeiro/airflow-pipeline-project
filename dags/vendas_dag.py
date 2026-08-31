@@ -1,19 +1,17 @@
 from airflow import DAG
 from airflow.providers.standard.operators.python import PythonOperator
 from datetime import datetime
-import os
+from pathlib import Path
 
 from src.ingestion import ingest
 from src.transformation import transform
 from src.validation import validate
 
 
-BASE_DIR = os.path.dirname(
-    os.path.dirname(os.path.realpath(__file__))
-)
+BASE_DIR = Path(__file__).resolve().parent.parent
 
-INPUT_FILE = os.path.join(BASE_DIR, "data", "vendas.csv")
-TRANSFORMED_FILE = os.path.join(BASE_DIR, "data", "vendas_transformadas.csv")
+INPUT_FILE = BASE_DIR / "data" / "vendas.csv"
+TRANSFORMED_FILE = BASE_DIR / "data" / "vendas_transformadas.csv"
 
 
 with DAG(
