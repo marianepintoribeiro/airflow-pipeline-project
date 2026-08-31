@@ -1,0 +1,22 @@
+services:
+  airflow:
+    build:
+      context: .
+    image: airflow-pipeline-project:local
+
+    environment:
+      AIRFLOW_HOME: /opt/airflow/state
+      AIRFLOW__CORE__DAGS_FOLDER: /opt/airflow/project/dags
+
+    volumes:
+      - airflow_state:/opt/airflow/state
+
+    command: >
+      bash -c "
+      airflow db migrate &&
+      airflow version
+      "
+
+volumes:
+  airflow_state:
+
