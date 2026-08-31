@@ -2,67 +2,16 @@ from airflow import DAG
 from airflow.providers.standard.operators.python import PythonOperator
 from datetime import datetime
 import os
-import pandas as pd
+
+from src.ingestion import ingest
+from src.transformation import transform
+from src.validation import validate
 
 
 BASE_DIR = "/workspaces/airflow-pipeline-project"
 
 INPUT_FILE = os.path.join(BASE_DIR, "data", "vendas.csv")
 TRANSFORMED_FILE = os.path.join(BASE_DIR, "data", "vendas_transformadas.csv")
-
-
-def ingest():
-    print("Iniciando ingestão dos dados...")
-
-    dados = pd.read_csv(INPUT_FILE)
-
-    print(f"{len(dados)} registros carregados.")
-    print(dados.head())
-
-
-def transform():
-    print("Iniciando transformação dos dados...")
-
-    dados = pd.read_csv(INPUT_FILE)
-
-    dados["valor_total"] = (
-        dados["quantidade"] * dados["preco_unitario"]
-    )
-
-    dados.to_csv(TRANSFORMED_FILE, index=False)
-
-    print("Transformação concluída.")
-    print(f"Arquivo gerado: {TRANSFORMED_FILE}")
-
-
-def validate():
-    print("Iniciando validação dos dados...")
-
-    dados = pd.read_csv(TRANSFORMED_FILE)
-
-    if dados.empty:
-        raise ValueError("O arquivo não possui registros.")
-
-    if dados["id_venda"].isnull().any():
-        raise ValueError("Existem vendas sem ID.")
-
-    if dados["id_venda"].duplicated().any():
-        raise ValueError("Existem IDs de venda duplicados.")
-
-    if (dados["quantidade"] <= 0).any():
-        raise ValueError("Existem quantidades inválidas.")
-
-    if (dados["preco_unitario"] <= 0).any():
-        raise ValueError("Existem preços unitários inválidos.")
-
-    valores_calculados = (
-        dados["quantidade"] * dados["preco_unitario"]
-    )
-
-    if not (dados["valor_total"] == valores_calculados).all():
-        raise ValueError("Existem valores totais incorretos.")
-
-    print(f"{len(dados)} registros validados com sucesso.")
 
 
 with DAG(
@@ -75,16 +24,26 @@ with DAG(
     ingest_task = PythonOperator(
         task_id="ingest",
         python_callable=ingest,
+        op_kwargs={
+            "input_file": INPUT_FILE,
+        },
     )
 
     transform_task = PythonOperator(
         task_id="transform",
         python_callable=transform,
+        op_kwargs={
+            "input_file": INPUT_FILE,
+            "transformed_file": TRANSFORMED_FILE,
+        },
     )
 
     validate_task = PythonOperator(
         task_id="validate",
         python_callable=validate,
+        op_kwargs={
+            "transformed_file": TRANSFORMED_FILE,
+        },
     )
 
     ingest_task >> transform_task >> validate_task

@@ -157,11 +157,20 @@ R$ 26.390,00
 
 ## Status do projeto
 
-🟡 **Em desenvolvimento**
+🟢 **Concluído — versão inicial**
 
-O projeto está sendo desenvolvido como parte de um portfólio de Engenharia de Dados.
+A pipeline foi executada com sucesso no Apache Airflow.
 
-As próximas etapas incluem execução da DAG em um ambiente com Apache Airflow, testes do pipeline e validação dos arquivos gerados.
+Durante a execução:
+
+* Os dados foram ingeridos a partir do arquivo CSV;
+* Os dados foram transformados utilizando Pandas;
+* O valor total de cada venda foi calculado;
+* 10 registros foram processados;
+* Os dados passaram pelas validações de qualidade;
+* Todas as tasks da DAG foram concluídas com sucesso.
+
+A versão atual representa uma implementação inicial de um pipeline de dados orquestrado com Apache Airflow.
 
 ## Aprendizados
 
