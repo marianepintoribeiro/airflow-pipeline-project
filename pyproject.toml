@@ -11,3 +11,7 @@ dependencies = [
 
 [tool.setuptools]
 packages = ["src"]
+[project.optional-dependencies]
+dev = [
+    "pytest==9.0.2"
+]
