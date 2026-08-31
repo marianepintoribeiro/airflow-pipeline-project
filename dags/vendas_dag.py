@@ -8,7 +8,9 @@ from src.transformation import transform
 from src.validation import validate
 
 
-BASE_DIR = "/workspaces/airflow-pipeline-project"
+BASE_DIR = os.path.dirname(
+    os.path.dirname(os.path.realpath(__file__))
+)
 
 INPUT_FILE = os.path.join(BASE_DIR, "data", "vendas.csv")
 TRANSFORMED_FILE = os.path.join(BASE_DIR, "data", "vendas_transformadas.csv")
