@@ -1,2 +1,2 @@
-apache-airflow
-pandas
+-e .
+apache-airflow==3.3.1
