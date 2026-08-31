@@ -1,6 +1,6 @@
 from airflow import DAG
 from airflow.providers.standard.operators.python import PythonOperator
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 
 from src.ingestion import ingest
@@ -13,12 +13,18 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 INPUT_FILE = BASE_DIR / "data" / "vendas.csv"
 TRANSFORMED_FILE = BASE_DIR / "data" / "vendas_transformadas.csv"
 
+DEFAULT_ARGS = {
+    "retries": 2,
+    "retry_delay": timedelta(minutes=1),
+}
+
 
 with DAG(
     dag_id="pipeline_vendas",
     start_date=datetime(2026, 8, 21),
     schedule=None,
     catchup=False,
+    default_args=DEFAULT_ARGS,
 ) as dag:
 
     ingest_task = PythonOperator(
