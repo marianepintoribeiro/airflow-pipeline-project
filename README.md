@@ -61,6 +61,11 @@ ingest → transform → validate → load
 
 A separação das responsabilidades permite que cada etapa seja desenvolvida, testada e observada individualmente.
 
+
+### DAG no Airflow
+
+![Arquitetura da DAG no Airflow](docs/images/airflow-dag-architecture.jpeg)
+
 ## Fluxo do pipeline
 
 ### 1. Ingest
@@ -103,6 +108,11 @@ DO UPDATE
 
 Com isso, o mesmo conjunto de dados pode ser reprocessado sem gerar duplicação de vendas na tabela.
 
+
+
+### Execução bem-sucedida no Airflow
+
+![Execução bem-sucedida da DAG no Airflow](docs/images/airflow-successful-run.jpeg)
 
 ## Tecnologias utilizadas
 
@@ -253,6 +263,11 @@ A conexão entre a aplicação e o banco é realizada com **psycopg**, utilizand
 
 No ambiente Docker Compose, os dados de negócio são armazenados em um volume dedicado do PostgreSQL, separado do estado utilizado pelo Airflow.
 
+
+### Dados persistidos no PostgreSQL
+
+![Dados persistidos na tabela vendas_transformadas](docs/images/postgres-loaded-data.jpeg)
+
 ## Docker e ambiente containerizado
 
 O projeto utiliza uma imagem baseada em **Apache Airflow 3.3.1 com Python 3.12**.
@@ -317,6 +332,11 @@ O comportamento do CI também foi validado por meio de um Pull Request temporár
 
 Atualmente, o CI automatiza a suíte de testes unitários do projeto. A execução end-to-end envolvendo Airflow, Docker e PostgreSQL não faz parte desse workflow.
 
+
+
+### Execução da CI no GitHub Actions
+
+![Execução bem-sucedida da CI no GitHub Actions](docs/images/github-actions-ci.jpeg)
 
 ## Como executar
 
