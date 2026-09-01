@@ -1,11 +1,18 @@
+import logging
 import os
 
 import pandas as pd
 import psycopg
 
 
+logger = logging.getLogger(__name__)
+
+
 def load(transformed_file):
-    print("Iniciando carga dos dados no PostgreSQL...")
+    logger.info(
+        "Iniciando carga no PostgreSQL. arquivo=%s",
+        transformed_file,
+    )
 
     dados = pd.read_csv(transformed_file)
 
@@ -42,8 +49,16 @@ def load(transformed_file):
         for row in dados.itertuples(index=False)
     ]
 
+    logger.info(
+        "Dados preparados para carga. registros=%s",
+        len(registros),
+    )
+
     with psycopg.connect(**connection_params) as connection:
         with connection.cursor() as cursor:
             cursor.executemany(query, registros)
 
-    print(f"{len(registros)} registros carregados no PostgreSQL com sucesso.")
+    logger.info(
+        "Carga no PostgreSQL concluída com sucesso. registros=%s",
+        len(registros),
+    )

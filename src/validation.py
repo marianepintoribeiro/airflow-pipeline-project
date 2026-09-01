@@ -1,8 +1,16 @@
+import logging
+
 import pandas as pd
 
 
+logger = logging.getLogger(__name__)
+
+
 def validate(transformed_file):
-    print("Iniciando validação dos dados...")
+    logger.info(
+        "Iniciando validação dos dados. arquivo=%s",
+        transformed_file,
+    )
 
     dados = pd.read_csv(transformed_file)
 
@@ -28,4 +36,7 @@ def validate(transformed_file):
     if not (dados["valor_total"] == valores_calculados).all():
         raise ValueError("Existem valores totais incorretos.")
 
-    print(f"{len(dados)} registros validados com sucesso.")
+    logger.info(
+        "Validação concluída com sucesso. registros=%s",
+        len(dados),
+    )

@@ -1,10 +1,18 @@
+import logging
+
 import pandas as pd
 
 
+logger = logging.getLogger(__name__)
+
+
 def ingest(input_file):
-    print("Iniciando ingestão dos dados...")
+    logger.info("Iniciando ingestão dos dados. arquivo=%s", input_file)
 
     dados = pd.read_csv(input_file)
 
-    print(f"{len(dados)} registros carregados.")
-    print(dados.head())
+    logger.info(
+        "Ingestão concluída com sucesso. registros=%s colunas=%s",
+        len(dados),
+        len(dados.columns),
+    )
