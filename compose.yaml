@@ -7,6 +7,11 @@ services:
     environment:
       AIRFLOW_HOME: /opt/airflow/state
       AIRFLOW__CORE__DAGS_FOLDER: /opt/airflow/project/dags
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: vendas
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
 
     volumes:
       - airflow_state:/opt/airflow/state
@@ -17,6 +22,19 @@ services:
       airflow version
       "
 
+  postgres:
+    image: postgres:16
+
+    environment:
+      POSTGRES_DB: vendas
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./sql/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+
 volumes:
   airflow_state:
-
+  postgres_data:
+  

@@ -6,6 +6,7 @@ from pathlib import Path
 from src.ingestion import ingest
 from src.transformation import transform
 from src.validation import validate
+from src.load import load
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -52,4 +53,12 @@ with DAG(
         },
     )
 
-    ingest_task >> transform_task >> validate_task
+    load_task = PythonOperator(
+        task_id="load",
+        python_callable=load,
+        op_kwargs={
+            "transformed_file": TRANSFORMED_FILE,
+        },
+    )
+
+    ingest_task >> transform_task >> validate_task >> load_task
